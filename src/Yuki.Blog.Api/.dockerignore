@@ -1,0 +1,17 @@
+**/.dockerignore
+**/.env
+**/.git
+**/.gitignore
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/.idea
+**/.vscode
+**/node_modules
+**/npm-debug.log
+**/coverage
+**/.coverage
+**/logs
+**/*.md
+!README.md

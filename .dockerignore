@@ -1,0 +1,114 @@
+# Git files
+**/.git
+**/.gitignore
+**/.gitattributes
+.git/
+.github/
+
+# IDE and Editor files
+**/.vs
+**/.vscode
+**/.idea
+**/.project
+**/.settings
+**/.toolstarget
+**/*.*proj.user
+*.swp
+*.swo
+*~
+
+# Build outputs
+**/bin
+**/obj
+**/out
+**/dist
+**/build
+**/TestResults
+**/coverage
+**/*.trx
+
+# NuGet packages (these will be restored)
+**/packages
+**/.nuget
+
+# Docker files
+**/.dockerignore
+**/docker-compose*
+**/Dockerfile*
+**/.docker
+
+# Environment and configuration
+**/.env
+**/.env.*
+**/secrets.dev.yaml
+**/values.dev.yaml
+**/appsettings.Development.json
+**/appsettings.*.json
+!**/appsettings.json
+
+# Logs
+**/logs
+**/*.log
+**/npm-debug.log
+**/*.log.*
+
+# Test files (if you don't want them in image)
+**/tests
+**/*Tests/
+**/*.Tests/
+**/*Test.cs
+**/*Tests.cs
+
+# Documentation
+**/docs
+**/*.md
+!**/README.md
+LICENSE
+LICENSE.txt
+
+# CI/CD
+**/.gitlab-ci.yml
+**/.travis.yml
+**/azure-pipelines.yml
+**/Jenkinsfile
+
+# Database files
+**/*.db
+**/*.sqlite
+**/*.mdf
+**/*.ldf
+**/*.dbmdl
+**/*.jfm
+
+# Node modules (if any)
+**/node_modules
+**/bower_components
+
+# Kubernetes/Helm
+**/charts
+**/k8s
+**/helm
+**/azds.yaml
+
+# Makefile (optional - include if needed for container)
+Makefile
+
+# Temporary files
+**/*.tmp
+**/*.temp
+**/*.bak
+**/*.cache
+**/.DS_Store
+**/Thumbs.db
+
+# Coverage reports
+**/.coverage
+**/coverage.json
+**/coverage.xml
+**/*.opencover.xml
+
+# Keep git references if needed (commented out by default)
+# !.git/HEAD
+# !.git/config
+# !.git/packed-refs
+# !.git/refs/**

@@ -1,0 +1,108 @@
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
+using Yuki.Blog.Application.Features.Posts.EventHandlers;
+using Yuki.Blog.Domain.Events;
+using Yuki.Blog.Domain.ValueObjects;
+
+namespace Yuki.Blog.Application.UnitTests.Features.Posts.EventHandlers;
+
+public class UpdateAuthorStatsHandlerTests
+{
+    private readonly Mock<ILogger<UpdateAuthorStatsHandler>> _mockLogger;
+    private readonly UpdateAuthorStatsHandler _handler;
+
+    public UpdateAuthorStatsHandlerTests()
+    {
+        _mockLogger = new Mock<ILogger<UpdateAuthorStatsHandler>>();
+        _handler = new UpdateAuthorStatsHandler(_mockLogger.Object);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldLogUpdateAuthorStatistics()
+    {
+        // Arrange
+        var postId = PostId.CreateUnique();
+        var authorId = AuthorId.CreateUnique();
+        var title = "Test Post Title";
+        var occurredOn = DateTime.UtcNow;
+
+        var domainEvent = new PostCreatedEvent(postId, authorId, title, occurredOn);
+
+        // Act
+        await _handler.Handle(domainEvent, CancellationToken.None);
+
+        // Assert
+        _mockLogger.Verify(
+            x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Domain Event") && v.ToString()!.Contains("Updating author statistics")),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldLogAuthorId()
+    {
+        // Arrange
+        var postId = PostId.CreateUnique();
+        var authorId = AuthorId.CreateUnique();
+        var title = "Test Post Title";
+        var occurredOn = DateTime.UtcNow;
+
+        var domainEvent = new PostCreatedEvent(postId, authorId, title, occurredOn);
+
+        // Act
+        await _handler.Handle(domainEvent, CancellationToken.None);
+
+        // Assert
+        _mockLogger.Verify(
+            x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(authorId.Value.ToString())),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldCompleteSuccessfully()
+    {
+        // Arrange
+        var postId = PostId.CreateUnique();
+        var authorId = AuthorId.CreateUnique();
+        var title = "Test Post Title";
+        var occurredOn = DateTime.UtcNow;
+
+        var domainEvent = new PostCreatedEvent(postId, authorId, title, occurredOn);
+
+        // Act
+        Func<Task> act = async () => await _handler.Handle(domainEvent, CancellationToken.None);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task Handle_WithCancellationToken_ShouldCompleteSuccessfully()
+    {
+        // Arrange
+        var postId = PostId.CreateUnique();
+        var authorId = AuthorId.CreateUnique();
+        var title = "Test Post Title";
+        var occurredOn = DateTime.UtcNow;
+
+        var domainEvent = new PostCreatedEvent(postId, authorId, title, occurredOn);
+        var cancellationToken = new CancellationToken();
+
+        // Act
+        Func<Task> act = async () => await _handler.Handle(domainEvent, cancellationToken);
+
+        // Assert
+        await act.Should().NotThrowAsync();
+    }
+}

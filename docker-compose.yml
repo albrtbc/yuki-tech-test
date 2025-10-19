@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: yuki-blog-postgres
+    environment:
+      POSTGRES_DB: yukiblog
+      POSTGRES_USER: yukiuser
+      POSTGRES_PASSWORD: yukipass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U yukiuser -d yukiblog"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - yuki-network
+
+  seq:
+    image: datalust/seq:latest
+    container_name: yuki-blog-seq
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_NOAUTHENTICATION=true
+    ports:
+      - "5341:80"      # Seq UI and HTTP ingestion (including OTLP)
+      - "5342:5342"    # Optional: OTLP gRPC endpoint
+    volumes:
+      - seq_data:/data
+    networks:
+      - yuki-network
+
+  api:
+    build:
+      context: .
+      dockerfile: src/Yuki.Blog.Api/Dockerfile
+    container_name: yuki-blog-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=yukiblog;Username=yukiuser;Password=yukipass;Port=5432
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - yuki-network
+
+volumes:
+  postgres_data:
+    driver: local
+  seq_data:
+    driver: local
+
+networks:
+  yuki-network:
+    driver: bridge

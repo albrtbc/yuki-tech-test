@@ -1,0 +1,129 @@
+###
+### Yuki Blog API - HTTP Requests
+###
+### SETUP:
+### - Environment selection happens automatically from http-client.env.json
+### - Default environment: development
+### - To switch environments: Tools -> HTTP Client -> Switch Environment
+###
+### TIPS:
+### - Click the play icon next to each request to run it individually
+### - Response handlers will capture created post IDs automatically
+### - Variables are defined in http-client.env.json
+###
+
+### ============================================
+### Health Check API
+### ============================================
+
+### Health Check - JSON Response
+GET {{baseUrl}}/api/health
+X-API-Version: {{apiVersion}}
+Accept: application/json
+
+### Health Check - XML Response
+GET {{baseUrl}}/api/health
+X-API-Version: {{apiVersion}}
+Accept: application/xml
+
+### ============================================
+### Posts API
+### ============================================
+
+### Create Post - JSON
+# @name createPost
+POST {{baseUrl}}/api/posts
+X-API-Version: {{apiVersion}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "authorId": "{{validAuthorId}}",
+  "title": "My First Blog Post",
+  "description": "This is a brief description of my blog post.",
+  "content": "This is the full content of my blog post. It can be quite long and detailed."
+}
+
+### Create Post - XML Response
+POST {{baseUrl}}/api/posts
+X-API-Version: {{apiVersion}}
+Content-Type: application/json
+Accept: application/xml
+
+{
+  "authorId": "{{validAuthorId}}",
+  "title": "Another Blog Post",
+  "description": "Testing with XML response format.",
+  "content": "This post will return an XML response instead of JSON."
+}
+
+### Get Post by ID - JSON (Basic)
+# Replace {postId} with actual post ID from create response
+GET {{baseUrl}}/api/posts/00000000-0000-0000-0000-000000000001
+X-API-Version: {{apiVersion}}
+Accept: application/json
+
+### Get Post by ID - JSON (Include Author)
+# Replace {postId} with actual post ID
+GET {{baseUrl}}/api/posts/00000000-0000-0000-0000-000000000001?include=author
+X-API-Version: {{apiVersion}}
+Accept: application/json
+
+### Get Post by ID - XML Response
+# Replace {postId} with actual post ID
+GET {{baseUrl}}/api/posts/00000000-0000-0000-0000-000000000001
+X-API-Version: {{apiVersion}}
+Accept: application/xml
+
+### ============================================
+### Test Scenarios
+### ============================================
+
+### Create Post - Invalid Author (404 Expected)
+POST {{baseUrl}}/api/posts
+X-API-Version: {{apiVersion}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "authorId": "{{invalidAuthorId}}",
+  "title": "Post with Invalid Author",
+  "description": "This should fail because the author doesn't exist.",
+  "content": "Testing error handling for non-existent author."
+}
+
+### Create Post - Missing Title (400 Expected)
+POST {{baseUrl}}/api/posts
+X-API-Version: {{apiVersion}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "authorId": "{{validAuthorId}}",
+  "title": "",
+  "description": "Post with missing title",
+  "content": "This should fail validation."
+}
+
+### Get Post - Not Found (404 Expected)
+GET {{baseUrl}}/api/posts/{{invalidAuthorId}}
+X-API-Version: {{apiVersion}}
+Accept: application/json
+
+### ============================================
+### Rate Limiting Test
+### ============================================
+### Note: POST /api/posts is rate limited to 10 requests per minute
+### Run this request multiple times quickly to test rate limiting
+
+### Create Post - Rate Limit Test
+POST {{baseUrl}}/api/posts
+X-API-Version: {{apiVersion}}
+Content-Type: application/json
+
+{
+  "authorId": "{{validAuthorId}}",
+  "title": "Rate Limit Test Post",
+  "description": "Testing rate limiting",
+  "content": "This is for testing rate limiting. Run this 11+ times quickly to get a 429 response."
+}
